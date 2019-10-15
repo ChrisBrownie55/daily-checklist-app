@@ -8,7 +8,7 @@ const CheckBox = ({
   checked,
   onPress,
   size = 30,
-  color = '#211f30',
+  color = '#1976D2',
   ...props
 }) => (
   <TouchableOpacity onPress={onPress} {...props}>

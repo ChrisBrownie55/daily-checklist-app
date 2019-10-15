@@ -10,12 +10,25 @@ import CheckBox from './components/CheckBox';
 
 function Task({ title, timeLimit, done, handleUpdate }) {
   return (
-    <View>
+    <View style={Task.styles.container}>
       <CheckBox checked={done} />
       <Text>{title}</Text>
     </View>
   );
 }
+
+Task.styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderColor: '#ADD1F5',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderRadius: 8,
+    alignSelf: 'stretch'
+  }
+});
 
 export default function App() {
   const [tasks, setTasks, clearTasks] = useAsyncStorageJSON('tasks', []);
@@ -23,7 +36,7 @@ export default function App() {
   function newTask() {
     setTasks([
       ...tasks,
-      { title: '', timeLimit: { active: false, minutes: 0 }, done: false }
+      { title: 'Title', timeLimit: { active: false, minutes: 0 }, done: false }
     ]);
   }
 
@@ -36,9 +49,9 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={App.styles.container}>
       <View>
-        <Text>Daily Checklist</Text>
+        <Text style={App.styles.title}>Daily Checklist</Text>
       </View>
       <View>
         {tasks.map((task, index) => (
@@ -60,11 +73,17 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+App.styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
+    paddingTop: 45,
+    paddingBottom: 45,
+    paddingLeft: 30,
+    paddingRight: 30
+  },
+  title: {
+    fontSize: 32,
+    marginBottom: 40
   }
 });

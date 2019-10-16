@@ -273,7 +273,11 @@ export default function App() {
   function newTask() {
     setTasks([
       ...tasks,
-      { title: 'Title', timeLimit: { active: false, minutes: 0 }, done: false }
+      {
+        title: 'Your Task',
+        timeLimit: { active: false, minutes: 0 },
+        done: false
+      }
     ]);
   }
 

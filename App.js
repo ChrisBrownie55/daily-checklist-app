@@ -271,6 +271,7 @@ export default function App() {
   const [openTaskIndex, setOpenTaskIndex] = useState(null);
 
   function newTask() {
+    setOpenTaskIndex(tasks.length);
     setTasks([
       ...tasks,
       {

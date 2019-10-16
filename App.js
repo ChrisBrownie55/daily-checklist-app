@@ -136,7 +136,7 @@ function Task({
               />
             </View>
             <View style={Task.styles.timeLimitSection}>
-              <Text style={{ marginRight: Platform.OS === 'ios' ? 10 : 0 }}>
+              <Text style={{ marginRight: Platform.OS === 'ios' ? 10 : 5 }}>
                 Time limit
               </Text>
               <Switch
@@ -239,7 +239,7 @@ Task.styles = StyleSheet.create({
   titleSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10
+    marginBottom: 12
   },
   timeLimitSection: {
     flexDirection: 'row',
@@ -261,9 +261,13 @@ Task.styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 20
+    marginTop: 25
   },
-  titleInput: {}
+  titleInput: {
+    borderBottomColor: '#1976D2',
+    borderBottomWidth: 1,
+    flex: 1
+  }
 });
 
 export default function App() {

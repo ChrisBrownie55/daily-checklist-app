@@ -137,7 +137,7 @@ function Task({
             </View>
             <View style={Task.styles.timeLimitSection}>
               <Text style={{ marginRight: Platform.OS === 'ios' ? 10 : 5 }}>
-                Time limit
+                Time Limit
               </Text>
               <Switch
                 value={isTimeLimitActive}

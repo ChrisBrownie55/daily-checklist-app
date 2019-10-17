@@ -4,7 +4,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 
 const CheckBox = ({
-  indeterminate = false,
   checked,
   onPress,
   size = 30,
@@ -16,9 +15,9 @@ const CheckBox = ({
       size={size}
       color={color}
       name={
-        indeterminate
+        checked === 'indeterminate'
           ? 'indeterminate-check-box'
-          : checked
+          : checked === true
           ? 'check-box'
           : 'check-box-outline-blank'
       }

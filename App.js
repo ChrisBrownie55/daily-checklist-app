@@ -19,6 +19,16 @@ import CheckBox from './components/CheckBox';
 import Swipeable from 'react-native-swipeable';
 import Touchable from './components/Touchable';
 
+import { Audio } from 'expo-av';
+
+const alarm = new Audio.Sound();
+const loadingAlarmPromise = alarm.loadAsync(require('./assets/alarm.mp3'));
+
+async function playAlarm() {
+  await loadingAlarmPromise;
+  await alarm.replayAsync();
+}
+
 function useStateWithDefault(defaultValue) {
   const [value, setValue] = useState(defaultValue);
 
@@ -86,16 +96,55 @@ function Task({
       onToggleOpen();
     }
   }
+  const [isDeleting, setDeleting] = useState(false);
 
+  const [startTime, setStartTime] = useState(null);
   function toggleDone() {
+    let newDone;
+
+    if (timeLimit.active) {
+      if (done === 'indeterminate') {
+        newDone = true;
+      } else if (done === true) {
+        newDone = false;
+      } else {
+        newDone = 'indeterminate';
+      }
+    } else {
+      newDone = !done;
+    }
+
+    if (newDone === 'indeterminate' && timeLimit.minutes) {
+      setStartTime(Date.now());
+    }
+
     onUpdate({
       title,
       timeLimit,
-      done: !done
+      done: newDone
     });
   }
 
-  const [isDeleting, setDeleting] = useState(false);
+  const [timer, setTimer] = useState(timeLimit.minutes);
+
+  useEffect(() => {
+    if (done === 'indeterminate') {
+      if (timer <= 0) {
+        // play alarm sound
+        playAlarm();
+        toggleDone();
+        setTimer(timeLimit.minutes);
+      } else {
+        const timerID = setTimeout(() => {
+          setTimer(
+            timeLimit.minutes - Math.floor((Date.now() - startTime) / 1000)
+          );
+        }, 1000);
+
+        return () => clearTimeout(timerID);
+      }
+    }
+  }, [done, timer, timeLimit.minutes, startTime]);
 
   return (
     <Swipeable
@@ -121,7 +170,14 @@ function Task({
             />
             <Text style={Task.styles.title}>{title}</Text>
             {timeLimit.active && (
-              <Text style={Task.styles.timeLimit}>{timeLimit.minutes} min</Text>
+              <Text
+                style={{
+                  ...Task.styles.timeLimit,
+                  color: done === 'indeterminate' ? 'green' : 'black'
+                }}
+              >
+                {done === 'indeterminate' ? timer : timeLimit.minutes} min
+              </Text>
             )}
           </View>
         </Touchable>

@@ -87,7 +87,8 @@ function Task({
       title: newTitle,
       timeLimit: {
         active: isTimeLimitActive,
-        minutes: timeLimitMinutes
+        minutes: timeLimitMinutes,
+        startTime: timeLimit.startTime
       },
       done
     });
@@ -98,7 +99,8 @@ function Task({
   }
   const [isDeleting, setDeleting] = useState(false);
 
-  const [startTime, setStartTime] = useState(null);
+  console.log(timeLimit);
+
   function toggleDone() {
     let newDone;
 
@@ -114,13 +116,12 @@ function Task({
       newDone = !done;
     }
 
-    if (newDone === 'indeterminate' && timeLimit.minutes) {
-      setStartTime(Date.now());
-    }
-
     onUpdate({
       title,
-      timeLimit,
+      timeLimit: {
+        ...timeLimit,
+        startTime: Date.now()
+      },
       done: newDone
     });
   }
@@ -128,7 +129,8 @@ function Task({
   const [timer, setTimer] = useState(timeLimit.minutes);
 
   useEffect(() => {
-    if (done === 'indeterminate') {
+    console.log(timeLimit.startTime);
+    if (done === 'indeterminate' && timeLimit.startTime !== null) {
       if (timer <= 0) {
         // play alarm sound
         playAlarm();
@@ -137,14 +139,15 @@ function Task({
       } else {
         const timerID = setTimeout(() => {
           setTimer(
-            timeLimit.minutes - Math.floor((Date.now() - startTime) / 1000)
+            timeLimit.minutes -
+              Math.floor((Date.now() - timeLimit.startTime) / 1000)
           );
         }, 1000);
 
         return () => clearTimeout(timerID);
       }
     }
-  }, [done, timer, timeLimit.minutes, startTime]);
+  }, [done, timer, timeLimit.minutes, timeLimit.startTime]);
 
   return (
     <Swipeable
@@ -336,7 +339,7 @@ export default function App() {
       ...tasks,
       {
         title: 'Your Task',
-        timeLimit: { active: false, minutes: 0 },
+        timeLimit: { active: false, minutes: 0, startTime: null },
         done: false
       }
     ]);

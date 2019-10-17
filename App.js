@@ -99,8 +99,6 @@ function Task({
   }
   const [isDeleting, setDeleting] = useState(false);
 
-  console.log(timeLimit);
-
   function toggleDone() {
     let newDone;
 
@@ -140,9 +138,9 @@ function Task({
         const timerID = setTimeout(() => {
           setTimer(
             timeLimit.minutes -
-              Math.floor((Date.now() - timeLimit.startTime) / 1000)
+              Math.floor((Date.now() - timeLimit.startTime) / 60000)
           );
-        }, 1000);
+        }, 60000);
 
         return () => clearTimeout(timerID);
       }

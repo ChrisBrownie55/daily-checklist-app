@@ -1,6 +1,6 @@
 // colors: https://material.io/resources/color/#!/?view.left=0&view.right=0&secondary.color=1675d1&primary.color=512DA8
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -20,6 +20,7 @@ import Swipeable from 'react-native-swipeable';
 import Touchable from './components/Touchable';
 
 import { Audio } from 'expo-av';
+import useInterval from './lib/use-interval';
 
 const alarm = new Audio.Sound();
 const loadingAlarmPromise = alarm.loadAsync(require('./assets/alarm.mp3'));
@@ -127,7 +128,6 @@ function Task({
   const [timer, setTimer] = useState(timeLimit.minutes);
 
   useEffect(() => {
-    console.log(timeLimit.startTime);
     if (done === 'indeterminate' && timeLimit.startTime !== null) {
       if (timer <= 0) {
         // play alarm sound
@@ -327,9 +327,38 @@ Task.styles = StyleSheet.create({
   }
 });
 
+/**
+ * Returns the start of the day in milliseconds since unix epoch
+ * @param {Date} date A date object that points to any point within a certain day
+ */
+function startOfDay(date) {
+  return (
+    date.getTime() -
+    (date.getHours() * 60 * 60 * 1000 +
+      date.getMinutes() * 60 * 1000 +
+      date.getSeconds() * 1000 +
+      date.getMilliseconds())
+  );
+}
+
 export default function App() {
   const [tasks, setTasks, clearTasks] = useAsyncStorageJSON('tasks', []);
   const [openTaskIndex, setOpenTaskIndex] = useState(null);
+  const [lastDayStart, setLastDayStart] = useAsyncStorageJSON(
+    'last-day-start',
+    startOfDay(new Date())
+  );
+
+  const resetTasksIfNewDay = useCallback(() => {
+    const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+    if (Date.now() - lastDayStart >= ONE_DAY_IN_MILLISECONDS) {
+      setLastDayStart(startOfDay(new Date()));
+    }
+  }, [lastDayStart]);
+
+  // run once initially
+  useEffect(resetTasksIfNewDay, []);
+  useInterval(resetTasksIfNewDay, 10000);
 
   function newTask() {
     setOpenTaskIndex(tasks.length);

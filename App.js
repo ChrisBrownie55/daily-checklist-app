@@ -353,8 +353,9 @@ export default function App() {
     const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
     if (Date.now() - lastDayStart >= ONE_DAY_IN_MILLISECONDS) {
       setLastDayStart(startOfDay(new Date()));
+      setTasks(tasks.map(task => ({ ...task, done: false })));
     }
-  }, [lastDayStart]);
+  }, [lastDayStart, tasks]);
 
   // run once initially
   useEffect(resetTasksIfNewDay, []);
